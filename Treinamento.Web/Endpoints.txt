@@ -1,0 +1,107 @@
+//esse aqui é de boa
+app.MapGet("/api/linguagens", async (AppDataContext context) =>
+{
+    var linguagens = await context.Linguagens.ToListAsync();
+    return Results.Ok(linguagens);
+});
+
+//esse aqui é HARD
+app.MapGet("api/informacoes", async (AppDataContext context, int? linguagemId) =>
+{
+    // Se um 'linguagemId' foi fornecido na query string (ex: ?linguagemId=1)
+    if (linguagemId.HasValue)
+    {
+        // Filtra as informações pela LinguagemId e inclui os dados da Linguagem associada.
+        var informacoesFiltradas = await context.Informacoes
+            .Where(i => i.LinguagemId == linguagemId.Value) // Filtra
+            .Include(i => i.Linguagem)                      // Inclui a Linguagem (para ver o nome, etc.)
+            .ToListAsync();
+        return Results.Ok(informacoesFiltradas);
+    }
+    else
+    {
+        // Se nenhum 'linguagemId' foi fornecido, retorna todas as informações.
+        var todasInformacoes = await context.Informacoes
+            .Include(i => i.Linguagem) // Inclui a Linguagem (para ver o nome, etc.)
+            .ToListAsync();
+        return Results.Ok(todasInformacoes); // Retorna 200 OK com todas as informações.
+    }
+});
+
+
+//POST  ---- Esse é o post simples
+app.MapPost("/api/informacoes", async (Informacao novaInformacao, AppDataContext context) =>
+{
+    // Validação de entrada: Verifica se a LinguagemId enviada existe no banco de dados.
+    var linguagemExiste = await context.Linguagens.AnyAsync(l => l.Id == novaInformacao.LinguagemId);
+
+    // Se a LinguagemId não existir, retorna um erro 400 Bad Request.
+    if (!linguagemExiste)
+    {
+        return Results.BadRequest("A LinguagemId informada não corresponde a uma linguagem existente.");
+    }
+
+    // Adiciona a nova informação ao DbSet em memória.
+    context.Informacoes.Add(novaInformacao);
+
+    // Salva as mudanças pendentes (a adição) no banco de dados.
+    await context.SaveChangesAsync();
+
+    // Retorna um status 201 Created com a URL do novo recurso e o objeto criado.
+    return Results.Created($"/api/informacoes/{novaInformacao.Id}", novaInformacao);
+});
+
+//ESSE AQUI É HARD, MAS É NECESSÁRIO
+app.MapGet("/api/informacoes/{id}", async (int id, AppDataContext context) =>
+{
+    var informacao = await context.Informacoes
+            .Include(i => i.Linguagem)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+    // Se a informação não foi encontrada (ou seja, 'informacao' é null)
+    if (informacao == null)
+    {
+        // Retorna um status HTTP 404 Not Found.
+        return Results.NotFound("Informação não encontrada.");
+    }
+
+    // Se a informação foi encontrada, retorna um status HTTP 200 OK
+    // e o objeto 'informacao' (que agora inclui a Linguagem) no corpo da resposta.
+    return Results.Ok(informacao);
+});
+
+app.MapPut("/api/informacoes/{id}", async (int id, Informacao informacaoAtualizada, AppDataContext context) =>
+{
+    // Valida se o ID da URL é igual ao ID do objeto no corpo da requisição.
+    if (id != informacaoAtualizada.Id)
+    {
+        return Results.BadRequest("O ID na URL não corresponde ao ID da informação no corpo da requisição.");
+    }
+
+    // Busca a informação existente no banco de dados pelo ID.
+    var informacaoExistente = await context.Informacoes.FindAsync(id);
+
+    // Se a informação não for encontrada, retorna 404 Not Found.
+    if (informacaoExistente == null)
+    {
+        return Results.NotFound("Informação não encontrada para atualização.");
+    }
+
+    // Valida se a LinguagemId fornecida para atualização existe no banco.
+    var linguagemExiste = await context.Linguagens.AnyAsync(l => l.Id == informacaoAtualizada.LinguagemId);
+    if (!linguagemExiste)
+    {
+        return Results.BadRequest("A LinguagemId informada para atualização não corresponde a uma linguagem existente.");
+    }
+
+    // Atualiza as propriedades da informação existente com os novos dados.
+    informacaoExistente.Titulo = informacaoAtualizada.Titulo;
+    informacaoExistente.Conteudo = informacaoAtualizada.Conteudo;
+    informacaoExistente.LinguagemId = informacaoAtualizada.LinguagemId;
+
+    // Salva as alterações no banco de dados.
+    await context.SaveChangesAsync();
+
+    // Retorna 204 No Content para indicar sucesso sem retorno de corpo.
+    return Results.NoContent();
+});

@@ -157,3 +157,4 @@ C:\Users\irene\Downloads\T.I ber\TopicosSistemas\TreinamentoAPI\Treinamento.Web\
 C:\Users\irene\Downloads\T.I ber\TopicosSistemas\TreinamentoAPI\Treinamento.Web\obj\Debug\net8.0\Treinamento.Web.pdb
 C:\Users\irene\Downloads\T.I ber\TopicosSistemas\TreinamentoAPI\Treinamento.Web\obj\Debug\net8.0\Treinamento.Web.genruntimeconfig.cache
 C:\Users\irene\Downloads\T.I ber\TopicosSistemas\TreinamentoAPI\Treinamento.Web\obj\Debug\net8.0\ref\Treinamento.Web.dll
+C:\Users\irene\Downloads\T.I ber\TopicosSistemas\TreinamentoAPI\Treinamento.Web\obj\Debug\net8.0\Treinamento.Web.sourcelink.json

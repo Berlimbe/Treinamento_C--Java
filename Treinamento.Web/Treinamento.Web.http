@@ -1,0 +1,32 @@
+//esse é o list de todas as linguagens
+###
+GET http://localhost:5121/api/linguagens
+Accept: application/json
+
+//esse é o get por id
+###
+GET http://localhost:5121/api/linguagens/2
+Accept: application/json
+
+//esse é o PUT da linguagem
+###
+PUT http://localhost:5121/api/linguagens/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "nome": "Java (Atualizado)"
+}
+
+###
+POST http://localhost:5121/api/informacoes
+Content-Type: application/json
+
+{
+    "titulo": "Nova Feature .NET 9",
+    "conteudo": "Detalhes sobre as próximas novidades do .NET 9...",
+    "linguagemId": 2
+}
+
+###
+DELETE http://localhost:5121/api/linguagens/1

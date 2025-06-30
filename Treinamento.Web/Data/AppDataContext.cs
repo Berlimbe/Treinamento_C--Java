@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Treinamento.Web.Models;
 
@@ -5,12 +7,10 @@ namespace Treinamento.Web.Data
 {
     public class AppDataContext : DbContext
     {
-        public AppDataContext(DbContextOptions<AppDataContext> options) : base(options)
-        {
-        }
+        public AppDataContext(DbContextOptions<AppDataContext> options) : base(options) { }
 
-        public DbSet<Linguagem> Linguagens { get; set; } 
-        public DbSet<Informacao> Informacoes { get; set; } 
+        public DbSet<Linguagem> Linguagens { get; set; }
+        public DbSet<Informacao> Informacoes { get; set; }
 
 
         // Opcional, mas boa prática para configurar relacionamentos e propriedades
@@ -30,3 +30,4 @@ namespace Treinamento.Web.Data
         }
     }
 }
+
